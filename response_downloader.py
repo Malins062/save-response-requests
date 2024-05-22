@@ -33,40 +33,30 @@ class ResponseDownloader:
     def get_file(self, filename):
         full_filename = f'{self.download_path}{filename}'
         request = {
-            'datetime_begin': datetime.now(),
+            'datetime_begin': self.now(),
             'filename': full_filename,
         }
         content = self.get_response(f'{filename}.pdf')
         request['result'] = self.save_content(content, full_filename)
-        request['datetime_end'] = datetime.now()
+        request['datetime_end'] = self.now()
 
         return request
 
     def get_result(self):
         response = {
             'url': self.url,
-            'datetime_begin': datetime.now(),
+            'datetime_begin': self.now(),
             'requests': [],
         }
 
-        for i in range(1, self.count):
+        for i in range(0, self.count):
             filename = f'{i}_1_15.pdf'
             response['requests'] += self.get_file(filename)
 
-        response['datetime_end'] = datetime.now()
+        response['datetime_end'] = self.now()
 
         return response
 
-    def _get_upload_link(self, disk_file_path):
-        upload_url = "https://cloud-api.yandex.net/v1/disk/resources/upload"
-        headers = self.get_headers()
-        params = {"path": disk_file_path, "overwrite": "true"}
-        response = requests.get(upload_url, headers=headers, params=params)
-        return response.json()
-
-    def upload_file_to_disk(self, disk_file_path, filename):
-        href = self._get_upload_link(disk_file_path=disk_file_path).get("href", "")
-        response = requests.put(href, data=open(filename, 'rb'))
-        response.raise_for_status()
-        if response.status_code == 201:
-            print(f"File - {disk_file_path} success download.")
+    @staticmethod
+    def now():
+        return datetime.now().strftime('%m/%d/%y %H:%M:%S')

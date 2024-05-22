@@ -13,4 +13,5 @@ if __name__ == '__main__':
     for url in URLS:
         print(f'--- GET ЗАПРОСЫ по адресу:  "{url}" ---')
         downloader = ResponseDownloader(CONTENT_TYPE, url, COUNT, DOWNLOAD_PATH)
-        pprint(downloader.get_result())
+        result = downloader.get_result()
+        pprint(result)
